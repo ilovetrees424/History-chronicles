@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maratha Chronicles</title>
+<style>
+:root{
+  --black:#050505; --dark:#111; --panel:#181818; --white:#f4f4f4;
+  --red:#ff2020; --yellow:#ffd43b; --blue:#39a7ff; --gray:#aaa;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:#000;color:var(--white);
+  font-family:"Press Start 2P",monospace;
+  image-rendering:pixelated;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.screen{min-height:100vh}
+.hidden{display:none!important}
+.btn{
+  border:3px solid #fff;background:#000;color:#fff;padding:14px 20px;
+  font-size:12px;box-shadow:4px 4px 0 #555;transition:.08s
+}
+.btn:hover{background:#fff;color:#000}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #555}
+.btn.red{border-color:var(--red);color:var(--red)}
+.btn.yellow{border-color:var(--yellow);color:var(--yellow)}
+.btn.blue{border-color:var(--blue);color:var(--blue)}
+
+#welcome{
+ display:flex;align-items:center;justify-content:center;text-align:center;
+ padding:25px;background:#000;position:relative;overflow:hidden
+}
+#welcome:before{
+ content:"";position:absolute;inset:0;
+ background:repeating-linear-gradient(0deg,#000 0 3px,#111 3px 6px);
+ opacity:.45;pointer-events:none
+}
+.hero{
+ max-width:950px;width:100%;padding:45px;border:4px solid #fff;background:#000;
+ box-shadow:0 0 0 6px #222,0 0 35px #fff3;position:relative
+}
+.logo{font-size:70px}
+h1{font-size:clamp(32px,7vw,68px);margin:20px 0;color:#fff;text-shadow:5px 5px #444}
+.hero p{font-size:14px;line-height:2;color:#ccc}
+.royal-card{
+ margin:25px auto;padding:12px;border:3px dashed #555;max-width:680px;
+ display:flex;align-items:center;gap:18px;text-align:left
+}
+.royal-card img{width:125px;height:150px;object-fit:cover;image-rendering:auto;border:2px solid #333}
+.royal-card p{font-size:11px;line-height:1.8;margin:0}
+
+#login{
+ display:flex;align-items:center;justify-content:center;padding:25px;background:#000
+}
+.card{
+ background:#000;border:4px solid #fff;box-shadow:0 0 0 6px #222,12px 12px 0 #333;
+ padding:30px;max-width:470px;width:100%
+}
+.card h2{color:#fff;font-size:20px;line-height:1.6}
+label{display:block;font-size:11px;margin:18px 0 8px}
+input{
+ width:100%;padding:13px;background:#050505;color:#fff;
+ border:3px solid #777;outline:none
+}
+input:focus{border-color:#fff}
+.note{font-size:9px;line-height:1.7;color:#888}
+.error{color:#ff3333;font-size:10px;min-height:22px;line-height:1.6}
+
+#app{min-height:100vh;background:#000}
+header{
+ position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+ justify-content:space-between;padding:12px 16px;background:#050505;
+ border-bottom:4px solid #fff
+}
+.brand{font-size:13px;white-space:nowrap}
+nav{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+nav button{
+ background:#000;color:#fff;border:2px solid #777;padding:8px 9px;font-size:9px
+}
+nav button:hover,nav button.active{border-color:#fff;background:#222}
+.adminTop{
+ background:#000;color:#ff3b3b;border:3px solid #ff3b3b;padding:9px;
+ font-size:9px;white-space:nowrap
+}
+main{max-width:1200px;margin:auto;padding:25px}
+.page{display:none}.page.active{display:block}
+.heroDash{
+ padding:35px;border:4px solid #fff;background:#050505;
+ box-shadow:8px 8px 0 #333
+}
+.heroDash h2{font-size:25px;line-height:1.6}
+.heroDash p{font-size:11px;line-height:2;color:#bbb}
+.grid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+ gap:18px;margin-top:20px
+}
+.tile,.info{
+ background:#050505;border:3px solid #777;padding:18px;
+ box-shadow:5px 5px 0 #222
+}
+.tile{padding:0;overflow:hidden}
+.tile img{width:100%;height:175px;object-fit:cover;display:block;image-rendering:auto}
+.tile .inside{padding:18px}
+.tile h3,.info h3{color:#ffd43b;font-size:15px;line-height:1.7}
+.tile p,.info p{font-size:10px;line-height:2;color:#ccc}
+.sectionTitle{margin:30px 0 20px;color:#fff;font-size:23px;line-height:1.6}
+.timeline{border-left:5px solid #fff;padding-left:20px}
+.event{
+ background:#050505;border:2px solid #555;padding:16px 20px;margin:15px 0;
+ font-size:10px;line-height:2;color:#ddd
+}
+.event b{color:#ffd43b}
+.quizQ{font-size:15px;line-height:2;font-weight:800}
+.answers{display:grid;gap:10px;margin:18px 0}
+.answers button{
+ padding:13px;text-align:left;border:2px solid #777;background:#000;color:#fff;
+ font-size:10px;line-height:1.7
+}
+.answers button:hover{border-color:#fff}
+#gameArea{
+ background:#050505;color:#fff;border:4px solid #fff;padding:30px;text-align:center;
+ box-shadow:8px 8px 0 #333
+}
+.coin{font-size:60px}.score{font-size:35px;color:#ffd43b;font-weight:900;margin:15px}
+.clicker{
+ width:190px;height:190px;border-radius:50%;border:5px solid #fff;
+ background:#000;font-size:22px;font-weight:900;color:#fff;
+ box-shadow:0 0 0 7px #222
+}
+.clicker:hover{background:#111}
+.clicker:active{transform:scale(.96)}
+.small{font-size:8px;color:#888;line-height:1.7}
+
+.adminPanel{
+ position:fixed;inset:0;background:#000e;z-index:100;
+ display:flex;align-items:center;justify-content:center;padding:20px
+}
+.adminBox{
+ background:#050505;border:4px solid #fff;max-width:900px;width:100%;
+ max-height:90vh;overflow:auto;padding:25px;position:relative;
+ box-shadow:10px 10px 0 #333
+}
+.close{
+ position:absolute;right:15px;top:12px;border:2px solid #fff;background:#000;
+ color:#fff;width:36px;height:36px;font-weight:900
+}
+.adminGrid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px
+}
+.site{border:3px solid #555;overflow:hidden;background:#000}
+.site img{width:100%;height:130px;object-fit:cover;image-rendering:auto}
+.site div{padding:13px}
+.site b{color:#ffd43b;font-size:12px}
+.site p{font-size:9px;line-height:1.7;color:#aaa}
+footer{text-align:center;padding:30px;color:#666;font-size:8px;line-height:2}
+.royal-emblem-img{
+ display:block;width:190px;height:230px;object-fit:cover;margin:10px auto 20px;
+ border:3px solid #555
+}
+@media(max-width:850px){
+ header{align-items:flex-start;flex-wrap:wrap}
+ nav{order:3;width:100%}
+ .hero{padding:25px}
+ .royal-card{flex-direction:column;text-align:center}
+}
+</style>
+
+<style>
+.offline-badge{
+  position:fixed;left:14px;bottom:14px;z-index:99999;
+  background:#111;color:#fff;border:2px solid #fff;
+  padding:8px 12px;font-family:monospace;font-size:11px;
+  box-shadow:4px 4px 0 #ff3131;
+}
+img{background:#090909;object-fit:contain;}
+</style>
+<div class="offline-badge">✓ OFFLINE IMAGE PACK • NO EXTERNAL IMAGES</div>
+
+
+<style id="royal-swarajya-theme">
+:root{
+  --black:#0b0908; --dark:#17110e; --panel:#211814; --white:#fff8e8;
+  --red:#b3261e; --yellow:#e5b84b; --blue:#6f9db7; --gray:#b8aa95;
+  --saffron:#d9822b; --gold:#e5b84b; --maroon:#641d1b; --stone:#9a8065;
+}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(229,184,75,.12),transparent 34%),
+    linear-gradient(135deg,#090706,#17100d 55%,#080605);
+  color:var(--white);font-family:Georgia,"Times New Roman",serif;image-rendering:auto;
+}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.13;z-index:-1;
+ background-image:linear-gradient(45deg,rgba(229,184,75,.15) 25%,transparent 25%,transparent 75%,rgba(229,184,75,.15) 75%);
+ background-size:32px 32px}
+.btn{border:2px solid var(--gold);background:linear-gradient(#3a2015,#1b100c);color:#fff5d7;padding:13px 19px;border-radius:4px;box-shadow:0 4px 0 #3b2116;transition:.15s;font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:.5px}
+.btn:hover{background:linear-gradient(#6b341c,#2b160f);color:#fff;transform:translateY(-1px)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #3b2116}
+.btn.red{border-color:#d15b3d;color:#ffd7c7}.btn.yellow{border-color:var(--gold);color:#ffe9a6}.btn.blue{border-color:#7faec7;color:#ccecff}
+#welcome{background:transparent;padding:35px}
+#welcome:before{background:radial-gradient(circle at center,rgba(217,130,43,.11),transparent 58%);opacity:1}
+.hero{max-width:980px;padding:52px 44px;border:2px solid var(--gold);border-radius:10px;background:linear-gradient(145deg,rgba(33,24,20,.97),rgba(12,9,8,.98));box-shadow:0 0 0 7px rgba(229,184,75,.08),0 24px 60px #000;position:relative}
+.hero:before,.hero:after{content:"◆";position:absolute;color:var(--gold);font-size:24px}.hero:before{left:18px;top:15px}.hero:after{right:18px;bottom:15px}
+.logo{font-size:62px;filter:drop-shadow(0 5px 0 #000)}
+h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(38px,7vw,76px);margin:18px 0;color:#fff4d1;text-shadow:3px 4px 0 #4c1c15;letter-spacing:2px}
+.hero p{font-size:17px;line-height:1.8;color:#dbcdb8}
+#login{background:transparent}
+.card{background:linear-gradient(145deg,#211814,#0e0a08);border:2px solid var(--gold);border-radius:8px;box-shadow:0 16px 45px #000;padding:32px;max-width:480px}
+.card h2{color:#ffe6a0;font-size:25px;line-height:1.4}
+label{font-size:14px;margin:18px 0 8px;color:#dfcfb8}
+input{padding:13px;background:#0a0807;color:#fff8e8;border:2px solid #6d5948;border-radius:4px;font-family:Georgia,"Times New Roman",serif}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(229,184,75,.12)}
+.note{font-size:12px;line-height:1.7;color:#a99b89}
+.error{color:#ff8b70;font-size:12px}
+#app{background:transparent}
+header{background:rgba(12,9,8,.96);border-bottom:2px solid var(--gold);box-shadow:0 8px 30px #000;padding:13px 18px;backdrop-filter:blur(8px)}
+.brand{font-family:Georgia,"Times New Roman",serif;font-size:18px;color:#ffe8ad;font-weight:700;letter-spacing:.5px}
+nav button{background:#1b120e;color:#eadcc7;border:1px solid #665343;padding:9px 11px;border-radius:3px;font-family:Georgia,"Times New Roman",serif;font-size:13px}
+nav button:hover,nav button.active{border-color:var(--gold);background:#382016;color:#fff0bf}
+.adminTop{background:#25130e;color:#ffc6a7;border:1px solid #b65c3e;padding:9px;border-radius:3px;font-family:Georgia,"Times New Roman",serif;font-weight:700}
+main{max-width:1240px;padding:30px}
+.heroDash{padding:36px;border:2px solid var(--gold);border-radius:8px;background:linear-gradient(145deg,rgba(40,27,20,.96),rgba(13,10,8,.98));box-shadow:0 14px 40px #000}
+.heroDash h2{font-size:32px;color:#ffe7a8;line-height:1.4}
+.heroDash p{font-size:16px;line-height:1.8;color:#cdbda7}
+.royal-card{margin:0 0 24px;padding:20px;border:1px solid #876b4b;background:linear-gradient(90deg,#2a1912,#17100d);display:flex;align-items:center;gap:18px;border-radius:6px;box-shadow:inset 0 0 30px rgba(229,184,75,.04)}
+.royal-emblem{width:70px;height:70px;display:grid;place-items:center;border:2px solid var(--gold);border-radius:50%;font-size:36px;background:#1a0e0b;box-shadow:0 0 20px rgba(229,184,75,.12)}
+.royal-card strong{font-size:18px;color:#f1cb72;letter-spacing:1px}.royal-card p{margin:7px 0 0;font-size:14px;line-height:1.7;color:#cfc0ad}
+.grid{gap:20px;margin-top:22px}
+.tile,.info{background:linear-gradient(145deg,#211713,#100c0a);border:1px solid #705843;padding:18px;box-shadow:0 8px 25px #000;border-radius:5px}
+.tile{padding:0;overflow:hidden}.tile img{width:100%;height:190px;object-fit:cover;display:block;filter:saturate(.9) contrast(1.05)}
+.tile .inside{padding:18px}.tile h3,.info h3{color:#e7bb5c;font-size:18px;line-height:1.5}.tile p,.info p{font-size:14px;line-height:1.8;color:#c9b9a4}
+.sectionTitle{margin:34px 0 20px;color:#ffe3a0;font-size:29px;line-height:1.4;border-left:4px solid var(--gold);padding-left:12px}
+.timeline{border-left:4px solid var(--gold);padding-left:20px}.event{background:#17100d;border:1px solid #5e4a3a;padding:17px 20px;margin:15px 0;font-size:14px;line-height:1.9;color:#d5c7b3;border-radius:3px}.event b{color:#e6bb5c}
+.quizQ{font-size:19px;line-height:1.7}.answers{gap:11px}.answers button{padding:13px;text-align:left;border:1px solid #6b5645;background:#120d0a;color:#f3e6d2;font-family:Georgia,"Times New Roman",serif;font-size:14px;border-radius:3px}.answers button:hover{border-color:var(--gold);background:#2b1a13}
+#gameArea{background:linear-gradient(145deg,#211713,#0d0a08);color:#fff;border:2px solid var(--gold);padding:34px;border-radius:8px;box-shadow:0 14px 40px #000}.coin{font-size:60px}.score{font-size:38px;color:#e8bd5b;font-weight:900;margin:15px}.clicker{width:190px;height:190px;border-radius:50%;border:5px solid var(--gold);background:radial-gradient(circle,#5d2719,#1b0e0a);font-size:22px;font-weight:900;color:#ffe8a9;box-shadow:0 0 0 7px #2a170f,0 0 30px rgba(229,184,75,.15)}
+.small{font-size:11px;color:#9d8f7e;line-height:1.7}
+.adminPanel{background:rgba(5,3,2,.9)}.adminBox{background:linear-gradient(145deg,#241812,#0e0a08);border:2px solid var(--gold);border-radius:7px;box-shadow:0 18px 60px #000}.close{border:1px solid #8b6c4a;background:#130c09;color:#ffe6a0;border-radius:3px}.site{border:1px solid #6a5340;background:#100b09;border-radius:4px}.site b{color:#e7bc61;font-size:14px}.site p{font-size:12px;line-height:1.7;color:#a99987}
+footer{text-align:center;padding:32px;color:#8e7d6a;font-size:11px;line-height:2}
+.offline-badge{background:#1b100b;color:#f1d28a;border:1px solid #7b603d;padding:7px 11px;font-family:Georgia,"Times New Roman",serif;font-size:11px;box-shadow:3px 3px 0 #090604;border-radius:3px}
+@media(max-width:850px){.hero{padding:35px 22px}.royal-card{flex-direction:column;text-align:center}.brand{font-size:15px}}
+</style>
+
+</head>
+<body>
+
+<section id="welcome" class="screen">
+  <div class="hero">
+    <div class="logo">🏰⚔️</div>
+    <h1>MARATHA CHRONICLES</h1>
+    <p>Explore the history of the Marathas through rulers, forts, battles, administration, a timeline, heritage links and fun games.</p>
+    <button class="btn" onclick="showLogin()">GET STARTED →</button>
+  </div>
+</section>
+
+<section id="login" class="screen hidden">
+  <div class="card">
+    <h2>👋 Welcome, Explorer!</h2>
+    <p>Enter the common learner account to continue.</p>
+    <label>Username</label>
+    <input id="username" placeholder="Username">
+    <label>Password</label>
+    <input id="password" type="password" placeholder="Password">
+    <p id="loginError" class="error"></p>
+    <button class="btn" onclick="login()">ENTER WEBSITE</button>
+    <p class="note">Demo learner account: <b>mr.11</b> / <b>7/11</b></p>
+  </div>
+</section>
+
+<section id="app" class="hidden">
+<header>
+  <div class="brand">🏰 Maratha Chronicles</div>
+  <nav>
+    <button class="active" onclick="openPage('home',this)">Home</button>
+    <button onclick="openPage('history',this)">History</button>
+    <button onclick="openPage('rulers',this)">Rulers</button>
+    <button onclick="openPage('battles',this)">Battles</button>
+    <button onclick="openPage('forts',this)">Forts</button>
+    <button onclick="openPage('timeline',this)">Timeline</button>
+    <button onclick="openPage('quiz',this)">Quiz</button>
+    <button onclick="openPage('games',this)">Games</button>
+  </nav>
+  <button class="adminTop" onclick="startAdmin()">⚙ ADMIN</button>
+</header>
+
+<main>
+  <section id="home" class="page active">
+    <div class="heroDash">
+      <div class="royal-card">
+        <div class="royal-emblem">⚔️</div>
+        <div>
+          <strong>THE SWARAJYA ARCHIVES</strong>
+          <p>Enter the world of forts, strategy, leadership and adventure. Explore the Maratha story, unlock historical facts and test your knowledge.</p>
+        </div>
+      </div>
+      <h2>WELCOME TO THE SWARAJYA ARCHIVES 🏰</h2>
+      <p>LEARN → EXPLORE → TEST YOURSELF → PLAY</p>
+      <button class="btn" onclick="openPage('history',document.querySelector('nav button:nth-child(2)'))">Start Learning</button>
+      <button class="btn alt" onclick="openPage('games',document.querySelector('nav button:nth-child(8)'))">Play Games</button>
+    </div>
+    <h2 class="sectionTitle">Explore</h2>
+    <div class="grid">
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3ESHIVAJI%20MAHARAJ%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EMARATHA%20HISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E" alt="Chhatrapati Shivaji Maharaj"><div class="inside"><h3>Chhatrapati Shivaji Maharaj</h3><p>Founder of the Maratha Kingdom and a key figure in the development of Swarajya.</p></div></div>
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M70%20300%20L90%20205%20L125%20180%20L155%20135%20L185%20180%20L225%20150%20L255%20185%20L290%20205%20L315%20300%20Z%22%20fill%3D%22%23777%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M95%20300%20L105%20220%20L135%20195%20L150%20220%20L175%20170%20L195%20220%20L225%20185%20L245%20220%20L275%20200%20L300%20300%20Z%22%20fill%3D%22%23555%22/%3E%0A%20%20%20%20%20%20%20%20%3Crect%20x%3D%22165%22%20y%3D%22245%22%20width%3D%2245%22%20height%3D%2255%22%20fill%3D%22%23181818%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M70%20300%20H315%22%20stroke%3D%22%23e8c35a%22%20stroke-width%3D%228%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3ERAIGAD%20FORT%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3ESAHYADRI%20FORTRESS%3C/text%3E%0A%20%20%20%20%3C/svg%3E" alt="Raigad Fort"><div class="inside"><h3>Forts</h3><p>Explore the strategic importance of hill forts such as Raigad, Pratapgad and Sinhagad.</p></div></div>
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EPESHWA%20ERA%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EMARATHA%20ADMINISTRATION%3C/text%3E%0A%20%20%20%20%3C/svg%3E" alt="Peshwa era"><div class="inside"><h3>Peshwa Era</h3><p>Learn how the Peshwas became central to Maratha political power in the 18th century.</p></div></div>
+    </div>
+  </section>
+
+  <section id="history" class="page">
+    <h2 class="sectionTitle">📜 Maratha History</h2>
+    <div class="info">
+      <h3>Origins and Swarajya</h3>
+      <p>The Marathas became a major political and military force in western India during the 17th century. Chhatrapati Shivaji Maharaj established a kingdom based on the idea of <b>Swarajya</b> (self-rule), developed a network of forts, organised administration and used mobile warfare effectively.</p>
+      <h3>Shivaji Maharaj</h3>
+      <p>Shivaji Maharaj was born in 1630 and was crowned at Raigad in 1674. His administration included the <b>Ashtapradhan</b>, a council of eight important offices. He also developed naval capabilities to protect the Konkan coast.</p>
+      <h3>After Shivaji Maharaj</h3>
+      <p>After Shivaji Maharaj, the Maratha state experienced periods of conflict and reorganisation. During the 18th century, the Peshwas became highly influential and Maratha power expanded across large parts of the Indian subcontinent.</p>
+      <h3>Later Period</h3>
+      <p>The Maratha Confederacy consisted of powerful houses including the Scindias, Holkars, Gaekwads and Bhonsles. The Marathas fought three major wars against the British East India Company. The final Anglo-Maratha War ended in 1818, after which British power expanded over former Maratha territories.</p>
+    </div>
+  </section>
+
+  <section id="rulers" class="page">
+    <h2 class="sectionTitle">👑 Important Leaders</h2>
+    <div class="grid">
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div class="inside"><h3>Shivaji Maharaj</h3><p>Founder of the Maratha Kingdom; crowned in 1674 at Raigad.</p></div></div>
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div class="inside"><h3>Peshwa Balaji Baji Rao</h3><p>Also known as Nanasaheb; Peshwa during the period leading to Panipat.</p></div></div>
+      <div class="tile"><div class="inside"><h3>Balaji Vishwanath</h3><p>First Peshwa of the Bhatt family and an important figure in consolidating Maratha politics.</p></div></div>
+      <div class="tile"><div class="inside"><h3>Baji Rao I</h3><p>Peshwa from 1720–1740, known for rapid cavalry campaigns and expansion.</p></div></div>
+    </div>
+  </section>
+
+  <section id="battles" class="page">
+    <h2 class="sectionTitle">⚔️ Major Battles & Conflicts</h2>
+    <div class="grid">
+      <div class="info"><h3>Battle of Pratapgad — 1659</h3><p>A major confrontation between Shivaji Maharaj's forces and Afzal Khan's army.</p></div>
+      <div class="info"><h3>Battle of Sinhagad — 1670</h3><p>Tanaji Malusare led the Maratha assault to recapture Kondhana, later known as Sinhagad.</p></div>
+      <div class="info"><h3>Third Battle of Panipat — 1761</h3><p>The Marathas fought Ahmad Shah Durrani's coalition in northern India. The battle had major consequences for 18th-century Indian politics.</p></div>
+      <div class="info"><h3>Anglo-Maratha Wars</h3><p>Three major conflicts between the Maratha powers and the British East India Company took place between 1775 and 1818.</p></div>
+    </div>
+  </section>
+
+  <section id="forts" class="page">
+    <h2 class="sectionTitle">🏯 Famous Maratha Forts</h2>
+    <div class="grid">
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div class="inside"><h3>Raigad</h3><p>Capital of Shivaji Maharaj's kingdom and site of his 1674 coronation.</p></div></div>
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div class="inside"><h3>Pratapgad</h3><p>Hill fort associated with the 1659 encounter with Afzal Khan.</p></div></div>
+      <div class="tile"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div class="inside"><h3>Sinhagad</h3><p>A strategically important fort near Pune, famous for Tanaji Malusare's 1670 campaign.</p></div></div>
+    </div>
+  </section>
+
+  <section id="timeline" class="page">
+    <h2 class="sectionTitle">🗓️ Interactive Timeline</h2>
+    <div class="timeline">
+      <div class="event"><b>1630</b> — Birth of Shivaji Maharaj.</div>
+      <div class="event"><b>1645</b> — Shivaji's early assertion of control in the Pune region begins to develop.</div>
+      <div class="event"><b>1659</b> — Battle of Pratapgad and defeat of Afzal Khan.</div>
+      <div class="event"><b>1664</b> — Shivaji's first raid on Surat.</div>
+      <div class="event"><b>1666</b> — Shivaji Maharaj's escape from Agra.</div>
+      <div class="event"><b>1674</b> — Coronation at Raigad.</div>
+      <div class="event"><b>1680</b> — Death of Shivaji Maharaj.</div>
+      <div class="event"><b>1720</b> — Baji Rao I becomes Peshwa.</div>
+      <div class="event"><b>1761</b> — Third Battle of Panipat.</div>
+      <div class="event"><b>1775–1818</b> — Anglo-Maratha Wars.</div>
+      <div class="event"><b>1818</b> — End of the Maratha Confederacy's political dominance after the Third Anglo-Maratha War.</div>
+    </div>
+  </section>
+
+  <section id="quiz" class="page">
+    <h2 class="sectionTitle">🧠 Maratha Quiz</h2>
+    <div class="info">
+      <div id="quizBox"></div>
+      <button class="btn" onclick="nextQuestion()">Next Question</button>
+      <p id="quizScore"></p>
+    </div>
+  </section>
+
+  <section id="games" class="page">
+    <h2 class="sectionTitle">🎮 Games</h2>
+    <div id="gameArea">
+      <div class="coin">🪙</div>
+      <h2>★ MARATHA COIN CLICKER ★</h2>
+      <p>Click the coin as fast as you can!</p>
+      <div class="score" id="score">0</div>
+      <button class="clicker" onclick="clickCoin()">CLICK!</button>
+      <br><br>
+      <button class="btn red" onclick="rickroll()">🎁 SECRET</button>
+      <p class="small" style="color:#ddd">Definitely not a suspicious button. 😇</p>
+    </div>
+  </section>
+</main>
+
+<footer>MARATHA CHRONICLES • THE SWARAJYA ARCHIVES • AN UNOFFICIAL EDUCATIONAL PROJECT</footer>
+</section>
+
+<div id="adminConfirm" class="adminPanel hidden">
+  <div class="adminBox" style="max-width:500px">
+    <button class="close" onclick="closeAdmin()">×</button>
+    <h2>⚠️ Admin Panel</h2>
+    <p>Are you sure you want to open the administrator area?</p>
+    <button class="btn" onclick="askAdminPassword()">YES, CONTINUE</button>
+    <button class="btn alt" onclick="closeAdmin()">CANCEL</button>
+  </div>
+</div>
+
+<div id="adminPassword" class="adminPanel hidden">
+  <div class="adminBox" style="max-width:500px">
+    <button class="close" onclick="closeAdmin()">×</button>
+    <h2>🔐 Administrator Verification</h2>
+    <p>Enter administrator password.</p>
+    <input id="adminPass" type="password" placeholder="Password">
+    <p id="adminError" class="error"></p>
+    <button class="btn" onclick="verifyAdmin()">UNLOCK</button>
+  </div>
+</div>
+
+<div id="adminArea" class="adminPanel hidden">
+  <div class="adminBox">
+    <button class="close" onclick="closeAdmin()">×</button>
+    <h2>⚙️ Admin Control Center</h2>
+    <p><b>Admin demo access granted.</b> This is a browser-only demo; the password is visible in the HTML and is not suitable for real security.</p>
+    <h3>🎛️ Website Controls</h3>
+    <button class="btn" onclick="openPage('history',null);closeAdmin()">📜 Switch to History</button>
+    <button class="btn green" onclick="openPage('games',null);closeAdmin()">🎮 Switch to Games</button>
+    <h3>🌍 Visit Historic & Tourist Sites</h3>
+    <div class="adminGrid">
+      <div class="site"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div><b>Taj Mahal</b><p>Agra, Uttar Pradesh</p><button class="btn" onclick="visit('https://tajmahal.gov.in/')">Visit Site</button></div></div>
+      <div class="site"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div><b>Red Fort</b><p>Delhi</p><button class="btn" onclick="visit('https://whc.unesco.org/en/list/231/')">Visit UNESCO</button></div></div>
+      <div class="site"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div><b>Ajanta Caves</b><p>Maharashtra</p><button class="btn" onclick="visit('https://whc.unesco.org/en/list/242/')">Visit UNESCO</button></div></div>
+      <div class="site"><img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20400%20390%22%3E%0A%20%20%20%20%3Crect%20width%3D%22400%22%20height%3D%22390%22%20rx%3D%2218%22%20fill%3D%22%23050505%22/%3E%0A%20%20%20%20%3Crect%20x%3D%2210%22%20y%3D%2210%22%20width%3D%22380%22%20height%3D%22370%22%20rx%3D%2212%22%20fill%3D%22none%22%20stroke%3D%22%23f0f0f0%22%20stroke-width%3D%224%22/%3E%0A%20%20%20%20%3Cg%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22200%22%20cy%3D%22190%22%20r%3D%2278%22%20fill%3D%22%23d9a06a%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M120%20185%20Q200%2075%20280%20185%20Q250%20130%20200%20135%20Q150%20130%20120%20185%22%20fill%3D%22%23222%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M145%20150%20Q200%20105%20255%20150%20L240%20120%20Q200%2075%20160%20120%20Z%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3Ccircle%20cx%3D%22170%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%3Ccircle%20cx%3D%22230%22%20cy%3D%22195%22%20r%3D%228%22%20fill%3D%22%23111%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M165%20235%20Q200%20255%20235%20235%22%20fill%3D%22none%22%20stroke%3D%22%23111%22%20stroke-width%3D%227%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M135%20270%20Q200%20235%20265%20270%20L285%20340%20L115%20340%20Z%22%20fill%3D%22%238b1e1e%22/%3E%0A%20%20%20%20%20%20%20%20%3Cpath%20d%3D%22M160%20270%20L200%20315%20L240%20270%22%20fill%3D%22%23d7a928%22/%3E%0A%20%20%20%20%20%20%20%20%3C/g%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22350%22%20text-anchor%3D%22middle%22%20fill%3D%22%23ff3131%22%20font-family%3D%22monospace%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%3EMARATHA%20CHRONICLES%3C/text%3E%0A%20%20%20%20%3Ctext%20x%3D%22200%22%20y%3D%22372%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f0f0f0%22%20font-family%3D%22monospace%22%20font-size%3D%2211%22%3EHISTORY%3C/text%3E%0A%20%20%20%20%3C/svg%3E"><div><b>History Reference</b><p>Explore more Indian heritage resources.</p><button class="btn" onclick="visit('https://whc.unesco.org/')">UNESCO</button></div></div>
+    </div>
+    <p class="small">Taj Mahal information link: official Department of Tourism, Government of Uttar Pradesh. UNESCO identifies the Taj Mahal as a World Heritage Site inscribed in 1983. citeturn0search1turn0search2</p>
+  </div>
+</div>
+
+<script>
+let score=0;
+function showLogin(){document.getElementById('welcome').classList.add('hidden');document.getElementById('login').classList.remove('hidden')}
+function login(){
+  const u=document.getElementById('username').value.trim(), p=document.getElementById('password').value;
+  if(u==='mr.11' && p==='7/11'){
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('loginError').textContent='';
+  }else document.getElementById('loginError').textContent='Incorrect username or password.';
+}
+function openPage(id,btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function startAdmin(){
+  document.getElementById('adminConfirm').classList.remove('hidden');
+}
+function askAdminPassword(){
+  document.getElementById('adminConfirm').classList.add('hidden');
+  document.getElementById('adminPassword').classList.remove('hidden');
+  document.getElementById('adminPass').focus();
+}
+function verifyAdmin(){
+  if(document.getElementById('adminPass').value==='67'){
+    document.getElementById('adminPassword').classList.add('hidden');
+    document.getElementById('adminArea').classList.remove('hidden');
+    document.getElementById('adminPass').value='';
+    document.getElementById('adminError').textContent='';
+  }else document.getElementById('adminError').textContent='Wrong admin password.';
+}
+function closeAdmin(){document.querySelectorAll('.adminPanel').forEach(x=>x.classList.add('hidden'))}
+function visit(url){window.open(url,'_blank','noopener,noreferrer')}
+function clickCoin(){score++;document.getElementById('score').textContent=score}
+function rickroll(){window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ','_blank','noopener,noreferrer')}
+
+const questions=[
+ {q:'Who founded the Maratha Kingdom?',a:['Shivaji Maharaj','Baji Rao I','Balaji Vishwanath','Sambhaji Maharaj'],c:0},
+ {q:'Where was Shivaji Maharaj crowned in 1674?',a:['Sinhagad','Raigad','Pratapgad','Shaniwar Wada'],c:1},
+ {q:'What does Swarajya broadly mean?',a:['Self-rule','Tax system','Army camp','Trade route'],c:0},
+ {q:'Who was Peshwa from 1720 to 1740?',a:['Baji Rao I','Balaji Baji Rao','Madhavrao I','Balaji Vishwanath'],c:0},
+ {q:'In which year was the Third Battle of Panipat?',a:['1659','1674','1761','1818'],c:2}
+];
+let qi=0,qscore=0;
+function renderQuiz(){
+ const x=questions[qi];
+ document.getElementById('quizBox').innerHTML='<div class="quizQ">'+(qi+1)+'. '+x.q+'</div><div class="answers">'+x.a.map((a,i)=>'<button onclick="answer('+i+')">'+a+'</button>').join('')+'</div>';
+ document.getElementById('quizScore').textContent='Score: '+qscore+'/'+questions.length;
+}
+function answer(i){
+ const x=questions[qi];
+ document.querySelectorAll('.answers button').forEach((b,n)=>{b.disabled=true;if(n===x.c)b.style.borderColor='#1f6b4f';if(n===i&&n!==x.c)b.style.borderColor='#b83232'});
+ if(i===x.c)qscore++;
+}
+function nextQuestion(){
+ qi=(qi+1)%questions.length;
+ if(qi===0 && qscore===questions.length){alert('Perfect score! 🏆')}
+ renderQuiz();
+}
+renderQuiz();
+</script>
+</body>
+</html>
